@@ -1,6 +1,5 @@
 ---
-title: "Practical Machine Learning"
-title2: "Weight Lifting Exercises Prediction"
+title: "Practical Machine Learning - Weight Lifting Exercises Prediction"
 author: "Gwen Vassy"
 date: "01/03/2017"
 output: html_document
