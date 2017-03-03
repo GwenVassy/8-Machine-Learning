@@ -47,10 +47,10 @@ We will then perform the following steps:
 
 * Explore the data, graphically and quantitatively
 * Clean the data
-* Partition the data into different sets
-+ Training set 1 to build the models (algorithms)
-+ Training set 2 to compare the models and select the most appropriate
-+ Validation set to perform cross validation (i.e. test the accuracy of the selected model)
+* Partition the data into different sets  
+        + Training set 1 to build the models (algorithms)  
+        + Training set 2 to compare the models and select the most appropriate  
+        + Validation set to perform cross validation (i.e. test the accuracy of the selected model)  
 * Fit the different models
 * Cross validate the chosen model
 
@@ -313,11 +313,11 @@ This seems to be a very accurate model (in fact at
 
 We therefore select this model as our **final** model.
 
-## 6. Model Validation
+## 6. Cross Validation
 
 ### 6.1 Accuracy of the model
 
-As previously mentioned, this model is very accurate on the training2 set, which is why it was selected. Now that we have selected it, lets examine its accuracy on the validation set:
+As previously mentioned, this model is very accurate on the training2 set, which is why it was selected. Now we use cross validation, i.e. we test the model on a data set different from the one on which the model was built and select: in our case the VALIDATION data set. 
 
 ```{r val}
 pred.rf.val <- predict(mod.rf.simple, validation)
@@ -330,7 +330,7 @@ We can see that the accuracy is still `r percent(postResample(pred.rf.simple, tr
 
 ### 6.2 Cross Validation: Expected out of sample error
 
-We use cross validation, i.e. we test the model on a data set different from the one on which the model was built and select: in our case the VALIDATION data set. The expected out of sample error on the validation data set is the number of mismatches on the validation data, which can be calculated like this:
+The expected out of sample error on the validation data set is the number of mismatches on the validation data, which can be calculated like this:
 
 ```{r}
 sum(pred.rf.val != validation$classe) / length(validation$classe)

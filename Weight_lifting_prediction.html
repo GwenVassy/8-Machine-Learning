@@ -144,10 +144,11 @@ testing &lt;- read.csv(&quot;pml-testing.csv&quot;)</code></pre>
 <ul>
 <li>Explore the data, graphically and quantitatively</li>
 <li>Clean the data</li>
-<li>Partition the data into different sets</li>
-<li>Training set 1 to build the models (algorithms)</li>
-<li>Training set 2 to compare the models and select the most appropriate</li>
-<li>Validation set to perform cross validation (i.e. test the accuracy of the selected model)</li>
+<li>Partition the data into different sets<br />
++ Training set 1 to build the models (algorithms)<br />
++ Training set 2 to compare the models and select the most appropriate<br />
++ Validation set to perform cross validation (i.e. test the accuracy of the selected model)<br />
+</li>
 <li>Fit the different models</li>
 <li>Cross validate the chosen model</li>
 </ul>
@@ -350,11 +351,11 @@ corrplot(corr.matrix2, tl.cex = 0.8, tl.col = rgb(0, 0, 0))</code></pre>
 <p>We therefore select this model as our <strong>final</strong> model.</p>
 </div>
 </div>
-<div id="model-validation" class="section level2">
-<h2>6. Model Validation</h2>
+<div id="cross-validation" class="section level2">
+<h2>6. Cross Validation</h2>
 <div id="accuracy-of-the-model" class="section level3">
 <h3>6.1 Accuracy of the model</h3>
-<p>As previously mentioned, this model is very accurate on the training2 set, which is why it was selected. Now that we have selected it, lets examine its accuracy on the validation set:</p>
+<p>As previously mentioned, this model is very accurate on the training2 set, which is why it was selected. Now we use cross validation, i.e. we test the model on a data set different from the one on which the model was built and select: in our case the VALIDATION data set.</p>
 <pre class="r"><code>pred.rf.val &lt;- predict(mod.rf.simple, validation)
 confusionMatrix(pred.rf.val, validation$classe)</code></pre>
 <pre><code>## Confusion Matrix and Statistics
@@ -393,7 +394,7 @@ confusionMatrix(pred.rf.val, validation$classe)</code></pre>
 </div>
 <div id="cross-validation-expected-out-of-sample-error" class="section level3">
 <h3>6.2 Cross Validation: Expected out of sample error</h3>
-<p>We use cross validation, i.e. we test the model on a data set different from the one on which the model was built and select: in our case the VALIDATION data set. The expected out of sample error on the validation data set is the number of mismatches on the validation data, which can be calculated like this:</p>
+<p>The expected out of sample error on the validation data set is the number of mismatches on the validation data, which can be calculated like this:</p>
 <pre class="r"><code>sum(pred.rf.val != validation$classe) / length(validation$classe)</code></pre>
 <pre><code>## [1] 0.00254907</code></pre>
 <p>Our predicted out-of-sample error is <strong> 0.255% </strong></p>
