@@ -43,6 +43,17 @@ testing <- read.csv("pml-testing.csv")
 ```
 <br><br>
 
+We will then perform the following steps:
+* Explore the data, graphically and quantitatively
+* Clean the data
+* Partition the data into different sets
++ Training set 1 to build the models (algorithms)
++ Training set 2 to compare the models and select the most appropriate
++ Validation set to perform cross validation (i.e. test the accuracy of the selected model)
+* Fit the different models
+* Cross validate the chosen model
+
+
 ## 2. Exploratory Analysis
 
 We briefly explore the data...  
@@ -316,9 +327,9 @@ We can see that the accuracy is still `r percent(postResample(pred.rf.simple, tr
 
 <br><br>
 
-### 6.2 Expected out of sample error
+### 6.2 Cross Validation: Expected out of sample error
 
-The expected out of sample error on the validation data set is the number of mismatches on the validation data, which can be calculated like this:
+We use cross validation, i.e. we test the model on a data set different from the one on which the model was built and select: in our case the VALIDATION data set. The expected out of sample error on the validation data set is the number of mismatches on the validation data, which can be calculated like this:
 
 ```{r}
 sum(pred.rf.val != validation$classe) / length(validation$classe)
@@ -330,12 +341,6 @@ Our predicted out-of-sample error is **
 **We can now apply this model to the test set of the assignment**
 <br><br>
 
-## 7. Applying model to predict test classe outcomes
-
-Our Test predictions are:  
-```{r}
-predict(mod.rf.simple, testing)
-```
 
 
 **Reference**:

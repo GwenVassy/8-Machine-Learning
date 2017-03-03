@@ -140,6 +140,7 @@ $(document).ready(function () {
 data &lt;- read.csv(&quot;pml-training.csv&quot;)
 testing &lt;- read.csv(&quot;pml-testing.csv&quot;)</code></pre>
 <p><br><br></p>
+<p>We will then perform the following steps: * Explore the data, graphically and quantitatively * Clean the data * Partition the data into different sets + Training set 1 to build the models (algorithms) + Training set 2 to compare the models and select the most appropriate + Validation set to perform cross validation (i.e. test the accuracy of the selected model) * Fit the different models * Cross validate the chosen model</p>
 </div>
 <div id="exploratory-analysis" class="section level2">
 <h2>2. Exploratory Analysis</h2>
@@ -380,24 +381,16 @@ confusionMatrix(pred.rf.val, validation$classe)</code></pre>
 <p>We can see that the accuracy is still 99.8%, which is excellent.</p>
 <p><br><br></p>
 </div>
-<div id="expected-out-of-sample-error" class="section level3">
-<h3>6.2 Expected out of sample error</h3>
-<p>The expected out of sample error on the validation data set is the number of mismatches on the validation data, which can be calculated like this:</p>
+<div id="cross-validation-expected-out-of-sample-error" class="section level3">
+<h3>6.2 Cross Validation: Expected out of sample error</h3>
+<p>We use cross validation, i.e. we test the model on a data set different from the one on which the model was built and select: in our case the VALIDATION data set. The expected out of sample error on the validation data set is the number of mismatches on the validation data, which can be calculated like this:</p>
 <pre class="r"><code>sum(pred.rf.val != validation$classe) / length(validation$classe)</code></pre>
 <pre><code>## [1] 0.00254907</code></pre>
 <p>Our predicted out-of-sample error is <strong> 0.255% </strong></p>
 <p><strong>We can now apply this model to the test set of the assignment</strong> <br><br></p>
-</div>
-</div>
-<div id="applying-model-to-predict-test-classe-outcomes" class="section level2">
-<h2>7. Applying model to predict test classe outcomes</h2>
-<p>Our Test predictions are:</p>
-<pre class="r"><code>predict(mod.rf.simple, testing)</code></pre>
-<pre><code>##  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 
-##  B  A  B  A  A  E  D  B  A  A  B  C  B  A  E  E  A  B  B  B 
-## Levels: A B C D E</code></pre>
 <p><strong>Reference</strong>: Velloso, E.; Bulling, A.; Gellersen, H.; Ugulino, W.; Fuks, H. Qualitative Activity Recognition of Weight Lifting Exercises. Proceedings of 4th International Conference in Cooperation with SIGCHI (Augmented Human ’13) . Stuttgart, Germany: ACM SIGCHI, 2013.</p>
 <p>Read more: <a href="http://groupware.les.inf.puc-rio.br/har#wle_paper_section#ixzz4aBNnXKBk" class="uri">http://groupware.les.inf.puc-rio.br/har#wle_paper_section#ixzz4aBNnXKBk</a></p>
+</div>
 </div>
 
 
