@@ -43,7 +43,8 @@ testing <- read.csv("pml-testing.csv")
 ```
 <br><br>
 
-We will then perform the following steps:
+We will then perform the following steps:  
+
 * Explore the data, graphically and quantitatively
 * Clean the data
 * Partition the data into different sets
