@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## 1. Introduction
 
-One thing that people regularly do is quantify how much of a particular activity they do, but they rarely quantify how well they do it. In this project, we will use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants.
+One thing that people regularly do is quantify how much of a particular activity they do, but they rarely quantify how well they do it. In this project, we will use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants to determine how well they are performing a barbell lift.
 
 The goal of our project is to predict the manner in which they did the exercise (a level from A to D). This is the "classe" variable in the training set. We will first decide which variables to predict with. We will then describe how we built our model, how we used cross validation, what we think the expected out of sample error is, and why we made the choices we did. 
 
@@ -38,8 +38,9 @@ library(rpart.plot)
 ```
 
 ```{r data}
-data <- read.csv("https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv")
-testing <- read.csv("https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv")
+# read in two files: training and testing
+data <- read.csv("pml-training.csv")
+testing <- read.csv("pml-testing.csv")
 ```
 <br><br>
 
@@ -53,6 +54,7 @@ str(data, list.len = 10)
 We then want to check quickly how 'clean' the raw data is. We calculate the proportion of NAs in the raw data, which is:
 
 ```{r nas }
+# check proportion of data elements that are "NA"
 percent( sum(is.na(data)) / (nrow(data)*ncol(data)) )
 ```
 
@@ -63,6 +65,7 @@ Given this data has a lot of NAs, we will clean it up first and then partition i
 
 We check how many of the rows are 'complete'
 ```{r complete }
+# check number of complete cases
 sum(complete.cases(data))
 ```
 
@@ -73,24 +76,37 @@ Given most rows are not complete, we cannot simply remove all complete cases, as
 
 First we check if there are any variables which do not contain a lot of values
 ```{r nacols }
+# calculate proportion of data items that are "NA"
 proportionNA <- percent(sapply(data, function(x) mean(is.na(x))))
 table(proportionNA)
 ```
 
 We can see that while a large number of columns have no NAs at all (93 have proportion 0), there are a significant number of columns that are almost all NAs (67 have over 97% NAs). These colums are unlikely to be good predictors so our first step is to remove them.
+<br>
 ```{r remove }
+# check dimensions of the data
 dim(data)
+# remove columns where the proportion of NAs is higher than 90%
 data <- data[, proportionNA < 0.9]
+# check dimensionso of the new data
 dim(data)
 ```
-Our new data now only has 93 variables. We can check again the proportion of NAs and complete cases...  
+
+```{r remove2, echo = FALSE, include=FALSE }
+# remove columns where the proportion of NAs is higher than 90%
+testing <- testing[, proportionNA < 0.9]
+```
+Our new data now only has **93 variables.** We can check again the proportion of NAs and complete cases...  
+<br>
 
 ```{r completecases}
+# number of complete cases
 sum(complete.cases(data))
+# proportion of data elements that are "NA"
 percent( sum(is.na(data)) / (nrow(data)*ncol(data)) )
 ```
 
-The data is now free of NAs and all rows are complete.
+**The data is now free of NAs and all rows are complete.**
 <br><br>
 
 #### 3.2 Remove mostly zero variables or near zero variance
@@ -99,10 +115,15 @@ Some variables (columns) still have a high proportion of zeros / very low varian
 We also remove the first 6 columns which contain mostly identifiers.
 
 ```{r small}
+# remove first 6 columns, and all columns that have near zero variance
 data <- data[ , -c(1:6,nearZeroVar(data))]
+# check dimensions of the new data
 dim(data)
 ```
-
+```{r small2, echo=FALSE, include=FALSE}
+# remove first 6 columns, and all columns that have near zero variance in the data set
+training <- training[ , -c(1:6,nearZeroVar(data))]
+```
 We have 54 useful columns left, all of which potentially useful predictors. 
 
 However we may have strong collinearity between some variables, which should be removed before fitting some types of models (e.g. lda)
@@ -208,8 +229,13 @@ rattle::fancyRpartPlot(mod.tree$finalModel)
         cat("Accuracy of Random Forest:", postResample(pred.rf, training.2$classe)[1], "\n")
         
 ```
+<br> We can also plot the convergence of this Random Forest model:
 
-We note that the Random Forest model is by far the most accurate, although a combination of all three models may be even more accurate. The Random Forest model also tells us which variables are most important.
+```{r}
+plot(mod.rf)
+```
+
+We note that the Random Forest model is by far the most accurate, although a combination of all three models may be even more accurate. The Random Forest model also tells us which variables are most important. It also tells us that the model does not get significantly more accurate after approximately 150 to 200 trees.
 
     
 ```{r plotimport}  
@@ -244,7 +270,8 @@ We notice that total_accel_belt and roll_belt seem highly correlated so we check
 ```{r cor}  
 cor(training.1$roll_belt, training.1$total_accel_belt)
 ```
-Given these two variables are very highly correlated ( `r percent(cor(training.1$roll_belt, training.1$total_accel_belt))` ) we should remove one of them. roll_belt scores higher on the Gini index so we remove total_accel_belt from our model. Our remaining variables are:  
+Given these two variables are very highly correlated (
+`r percent(cor(training.1$roll_belt, training.1$total_accel_belt))`) we should remove one of them. roll_belt scores higher on the Gini index so we remove total_accel_belt from our model. Our remaining variables are:  
 
 ```{r}
 rownames(import.var)[c(1:4)]
@@ -254,14 +281,31 @@ rownames(import.var)[c(1:4)]
 
 ```{r rf2}              
 # Fit a random forest predictor using the "rf"" method to the selected variables
+        set.seed(1709)
+        
         imp.var <- paste0(rownames(import.var)[c(1:4)], collapse = "+")
         formula.rf <- as.formula(paste0("classe ~", imp.var))
-        mod.rf.simple <- randomForest(formula.rf, data = training.1, trControl=control)
+        mod.rf.simple <- randomForest(formula.rf, data = training.1, ntree = 200, trControl=control)
         pred.rf.simple <- predict(mod.rf.simple, training.2)
         cat("Accuracy of simplified Random Forest:", postResample(pred.rf.simple, training.2$classe)[1], "\n")
 ```
 
-This seems to be a very accurate model (in fact at 99.6%, it is more accurate than the model based on all the variables at 99.2%), based only on these 4 variables, and is thus a better model: it is both *simpler* and *more accurate*).
+We can also plot this Random Forest convergence
+
+```{r}
+plot(mod.rf.simple, lty=1, lwd=c(3,1,1,1,1,1), 
+     main = "Convergence of Simplified Random Forest Model"); legend(160, y=0.042, 
+       legend = c("OOB", "A","B", "C", "D", "E"), 
+       col = c("black", "red", "green", "blue", "cyan", "magenta"),
+       lty=1, lwd=c(3,1,1,1,1,1),
+       cex=0.8,
+       bty = "n",
+       seg.len = 3)
+```
+This seems to be a very accurate model (in fact at
+`r percent(postResample(pred.rf.simple, training.2$classe)[1])`, it is more accurate than the model based on all the variables at 
+`r percent(postResample(pred.rf, training.2$classe)[1])`
+), based only on these 4 variables, and is thus a better model: it is both *simpler* and *more accurate*).
 
 We therefore select this model as our **final** model.
 
@@ -272,11 +316,11 @@ We therefore select this model as our **final** model.
 As previously mentioned, this model is very accurate on the training2 set, which is why it was selected. Now that we have selected it, lets examine its accuracy on the validation set:
 
 ```{r val}
-        pred.rf.val <- predict(mod.rf.simple, validation)
-        confusionMatrix(pred.rf.val, validation$classe)
+pred.rf.val <- predict(mod.rf.simple, validation)
+confusionMatrix(pred.rf.val, validation$classe)
 ```
   
-We can see that the accuracy is still 99.6%, which is exxcellent.
+We can see that the accuracy is still `r percent(postResample(pred.rf.simple, training.2$classe)[1])`, which is excellent.
 
 <br><br>
 
@@ -287,16 +331,18 @@ The expected out of sample error on the validation data set is the number of mis
 ```{r}
 sum(pred.rf.val != validation$classe) / length(validation$classe)
 ```
-Our predicted out-of-sample error is **0.4%**.
+Our predicted out-of-sample error is **
+`r percent(sum(pred.rf.val != validation$classe) / length(validation$classe))`
+**
 
 **We can now apply this model to the test set of the assignment**
 <br><br>
 
+Our Test predictions are:
+```{r}
+predict(mod.rf.simple, testing)
+```
 
-
-*IMPORTANT NOTE: In reality, the num_window variable seems too highly correlated to the classe variable to be a real predictor and may be a factor of how the experiment was recorded.* <br>
-
-*It should probably not be included in the analysis for the purposes of real predictions. However for the purpose of the exercise, which specifies "You may use any of the other variables to predict with", it has been kept in the model as it is by far the best predictor.*
 
 **Reference**:
 Velloso, E.; Bulling, A.; Gellersen, H.; Ugulino, W.; Fuks, H. Qualitative Activity Recognition of Weight Lifting Exercises. Proceedings of 4th International Conference in Cooperation with SIGCHI (Augmented Human '13) . Stuttgart, Germany: ACM SIGCHI, 2013.
