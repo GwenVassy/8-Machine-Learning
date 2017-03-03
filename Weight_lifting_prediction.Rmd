@@ -92,10 +92,6 @@ data <- data[, proportionNA < 0.9]
 dim(data)
 ```
 
-```{r remove2, echo = FALSE, include=FALSE }
-# remove columns where the proportion of NAs is higher than 90%
-testing <- testing[, proportionNA < 0.9]
-```
 Our new data now only has **93 variables.** We can check again the proportion of NAs and complete cases...  
 <br>
 
@@ -120,10 +116,7 @@ data <- data[ , -c(1:6,nearZeroVar(data))]
 # check dimensions of the new data
 dim(data)
 ```
-```{r small2, echo=FALSE, include=FALSE}
-# remove first 6 columns, and all columns that have near zero variance in the data set
-training <- training[ , -c(1:6,nearZeroVar(data))]
-```
+
 We have 54 useful columns left, all of which potentially useful predictors. 
 
 However we may have strong collinearity between some variables, which should be removed before fitting some types of models (e.g. lda)
@@ -338,7 +331,9 @@ Our predicted out-of-sample error is **
 **We can now apply this model to the test set of the assignment**
 <br><br>
 
-Our Test predictions are:
+## 7 Applying model to predict test classe outcomes
+
+Our Test predictions are:  
 ```{r}
 predict(mod.rf.simple, testing)
 ```

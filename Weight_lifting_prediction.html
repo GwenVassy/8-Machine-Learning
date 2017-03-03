@@ -387,9 +387,17 @@ confusionMatrix(pred.rf.val, validation$classe)</code></pre>
 <pre><code>## [1] 0.00254907</code></pre>
 <p>Our predicted out-of-sample error is <strong> 0.255% </strong></p>
 <p><strong>We can now apply this model to the test set of the assignment</strong> <br><br></p>
+</div>
+</div>
+<div id="applying-model-to-predict-test-classe-outcomes" class="section level2">
+<h2>7 Applying model to predict test classe outcomes</h2>
+<p>Our Test predictions are:</p>
+<pre class="r"><code>predict(mod.rf.simple, testing)</code></pre>
+<pre><code>##  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 
+##  B  A  B  A  A  E  D  B  A  A  B  C  B  A  E  E  A  B  B  B 
+## Levels: A B C D E</code></pre>
 <p><strong>Reference</strong>: Velloso, E.; Bulling, A.; Gellersen, H.; Ugulino, W.; Fuks, H. Qualitative Activity Recognition of Weight Lifting Exercises. Proceedings of 4th International Conference in Cooperation with SIGCHI (Augmented Human ’13) . Stuttgart, Germany: ACM SIGCHI, 2013.</p>
 <p>Read more: <a href="http://groupware.les.inf.puc-rio.br/har#wle_paper_section#ixzz4aBNnXKBk" class="uri">http://groupware.les.inf.puc-rio.br/har#wle_paper_section#ixzz4aBNnXKBk</a></p>
-</div>
 </div>
 
 
