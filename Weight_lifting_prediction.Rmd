@@ -331,7 +331,7 @@ Our predicted out-of-sample error is **
 **We can now apply this model to the test set of the assignment**
 <br><br>
 
-## 7 Applying model to predict test classe outcomes
+## 7. Applying model to predict test classe outcomes
 
 Our Test predictions are:  
 ```{r}
